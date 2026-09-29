@@ -9,38 +9,32 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. Complete CSS Customization (Clean UI + Hides Streamlit GitHub/Footer Elements)
+# 2. Strict CSS Theme Override (Fixes Dark Mode contrast & illegible text)
 st.markdown("""
 <style>
-    /* HIDE ALL DEFAULT STREAMLIT HEADERS, FOOTERS & GITHUB ICONS */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .stDeployButton {display:none !important;}
-    [data-testid="stHeader"] {display: none !important;}
-    [data-testid="stToolbar"] {display: none !important;}
-    [data-testid="stSidebarNav"] {display: none !important;}
-    [data-testid="stDecoration"] {display: none !important;}
-    [data-testid="stStatusWidget"] {display: none !important;}
-    #GithubIcon {visibility: hidden !important;}
+    /* HIDE STREAMLIT BRANDING & NAVBAR */
+    #MainMenu, footer, header {visibility: hidden !important;}
+    .stDeployButton, [data-testid="stHeader"], [data-testid="stToolbar"], 
+    [data-testid="stSidebarNav"], [data-testid="stDecoration"], 
+    [data-testid="stStatusWidget"], #GithubIcon {display: none !important;}
 
-    /* GLOBAL CLEAN PASTEL THEMING */
+    /* GLOBAL LIGHT BACKGROUND & FORCED DARK TEXT */
     .stApp {
-        background: #f1f5f9;
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    
-    /* CENTERED MAIN CONTAINER */
+
     .block-container {
         padding-top: 2rem !important;
         padding-bottom: 2rem !important;
         max-width: 680px;
     }
-    
-    /* APP HEADER BANNER */
+
+    /* HEADER BANNER */
     .app-header {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        color: white;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: #ffffff !important;
         padding: 28px 20px;
         border-radius: 20px;
         text-align: center;
@@ -59,43 +53,52 @@ st.markdown("""
         margin: 0;
     }
 
-    /* INPUT FIELD STYLING */
+    /* FORCE ALL LABELS TO BE VISIBLE DARK TEXT */
+    label, .stWidgetLabel, [data-testid="stWidgetLabel"] p {
+        color: #1e293b !important;
+        font-weight: 600 !important;
+        font-size: 15px !important;
+    }
+
+    /* TEXT AREA & INPUT STYLING */
     .stTextArea textarea {
-        border-radius: 14px !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border-radius: 12px !important;
         border: 2px solid #cbd5e1 !important;
         padding: 14px !important;
         font-size: 15px !important;
+    }
+    .stTextArea textarea::placeholder {
+        color: #94a3b8 !important;
+    }
+
+    /* DROPDOWN SELECTBOX STYLING */
+    div[data-baseweb="select"] > div {
         background-color: #ffffff !important;
         color: #0f172a !important;
-    }
-    .stTextArea textarea:focus {
-        border-color: #3b82f6 !important;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
-    }
-
-    /* SELECTBOX STYLING */
-    div[data-baseweb="select"] > div {
         border-radius: 12px !important;
         border: 2px solid #cbd5e1 !important;
+    }
+    div[data-baseweb="select"] * {
+        color: #0f172a !important;
         background-color: #ffffff !important;
     }
 
-    /* PRIMARY BUTTON STYLING */
+    /* BUTTON STYLING */
     .stButton > button {
         width: 100%;
-        background: #2563eb;
-        color: white;
-        border-radius: 12px;
-        height: 50px;
-        font-size: 17px;
-        font-weight: 600;
-        border: none;
-        transition: all 0.2s ease-in-out;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        background-color: #2563eb !important;
+        color: #ffffff !important;
+        border-radius: 12px !important;
+        height: 50px !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
     }
     .stButton > button:hover {
-        background: #1d4ed8;
-        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+        background-color: #1d4ed8 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -108,7 +111,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# 4. API Key Resolution (Uses Secrets directly, fallback to sidebar if missing)
+# 4. API Key Resolution
 api_key = None
 if "GEMINI_API_KEY" in st.secrets:
     api_key = st.secrets["GEMINI_API_KEY"]
@@ -117,7 +120,7 @@ else:
         st.header("⚙️ إعدادات المفتاح")
         api_key = st.text_input("مفتاح Google Gemini API:", type="password")
 
-# 5. User Input Controls
+# 5. User Inputs
 user_input = st.text_area(
     "📱 أدخل أو ألصق الرسالة/الرابط هنا:",
     placeholder="مثال: مرحباً يا بطل، لقد ربحت معنا آلاف الجواهر في لعبة روبلوكس! اضغط هنا للحصول عليها...",
@@ -134,7 +137,7 @@ if st.button("🚀 بدء الفحص والتحليل الأمني"):
     if not user_input:
         st.warning("⚠️ الرجاء كتابة أو لصق رسالة أولاً لفحصها.")
     elif not api_key:
-        st.error("⚠️ لم يتم العثور على مفتاح API في الإعدادات.")
+        st.error("⚠️️ لم يتم العثور على مفتاح API في الإعدادات.")
     else:
         with st.spinner("🔍 جاري فحص الرابط والنص عبر الذكاء الاصطناعي..."):
             try:
