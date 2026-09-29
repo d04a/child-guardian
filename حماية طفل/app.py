@@ -3,105 +3,152 @@ from google import genai
 
 # 1. Page Configuration
 st.set_page_config(
-    page_title="حارس الطفل الرقمي | Digital Child Guardian",
+    page_title="حارس الطفل الرقمي",
     page_icon="🛡️",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="collapsed"
 )
 
-# 2. Medium-Toned & Friendly UI Styling (Clean, Professional Pastels)
+# 2. Complete CSS Customization (Clean UI + Hides Streamlit GitHub/Footer Elements)
 st.markdown("""
-    <style>
+<style>
+    /* HIDE ALL DEFAULT STREAMLIT HEADERS, FOOTERS & GITHUB ICONS */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .stDeployButton {display:none !important;}
+    [data-testid="stHeader"] {display: none !important;}
+    [data-testid="stToolbar"] {display: none !important;}
+    [data-testid="stSidebarNav"] {display: none !important;}
+    [data-testid="stDecoration"] {display: none !important;}
+    [data-testid="stStatusWidget"] {display: none !important;}
+    #GithubIcon {visibility: hidden !important;}
+
+    /* GLOBAL CLEAN PASTEL THEMING */
     .stApp {
-        background-color: #f4f7f6;
-        color: #2c3e50;
+        background: #f1f5f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    .stTextInput>div>div>input, .stTextArea>div>div>textarea {
-        background-color: #ffffff;
-        color: #2c3e50;
-        border-radius: 12px;
-        border: 2px solid #cbd5e1;
+    
+    /* CENTERED MAIN CONTAINER */
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+        max-width: 680px;
     }
-    .stTextInput>div>div>input:focus, .stTextArea>div>div>textarea:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
-    }
-    .stButton>button {
-        width: 100%;
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    
+    /* APP HEADER BANNER */
+    .app-header {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
         color: white;
-        font-weight: bold;
-        border-radius: 12px;
-        height: 52px;
-        border: none;
-        transition: 0.3s;
-        font-size: 16px;
-    }
-    .stButton>button:hover {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
-    }
-    .main-header {
-        background: linear-gradient(135deg, #e0f2fe 0%, #e8eaf6 100%);
-        padding: 25px;
-        border-radius: 16px;
+        padding: 28px 20px;
+        border-radius: 20px;
         text-align: center;
-        border: 1px solid #cbd5e1;
-        margin-bottom: 25px;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+        margin-bottom: 24px;
     }
-    </style>
+    .app-header h1 {
+        color: #ffffff !important;
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+    .app-header p {
+        color: #dbeafe !important;
+        font-size: 15px;
+        margin: 0;
+    }
+
+    /* INPUT FIELD STYLING */
+    .stTextArea textarea {
+        border-radius: 14px !important;
+        border: 2px solid #cbd5e1 !important;
+        padding: 14px !important;
+        font-size: 15px !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+    }
+    .stTextArea textarea:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+    }
+
+    /* SELECTBOX STYLING */
+    div[data-baseweb="select"] > div {
+        border-radius: 12px !important;
+        border: 2px solid #cbd5e1 !important;
+        background-color: #ffffff !important;
+    }
+
+    /* PRIMARY BUTTON STYLING */
+    .stButton > button {
+        width: 100%;
+        background: #2563eb;
+        color: white;
+        border-radius: 12px;
+        height: 50px;
+        font-size: 17px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+    .stButton > button:hover {
+        background: #1d4ed8;
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    }
+</style>
 """, unsafe_allow_html=True)
 
-# 3. Header Section
+# 3. App Header Display
 st.markdown("""
-    <div class="main-header">
-        <h1 style='color: #1e3a8a; margin-bottom: 5px;'>🛡️ حارس الطفل الرقمي</h1>
-        <p style='color: #475569; font-size: 16px; margin: 0;'>مشروع سيف الذكي لحماية أطفالنا من المخاطر والروابط الاحتيالية</p>
+    <div class="app-header">
+        <h1>🛡️ حارس الطفل الرقمي</h1>
+        <p>نظام التوعية والتحليل الأمني الذكي لحماية الأطفال من المخاطر الرقمية</p>
     </div>
 """, unsafe_allow_html=True)
 
-# Sidebar for API Key Configuration
-with st.sidebar:
-    st.image("https://img.icons8.com/clouds/200/security-checked.png", width=110)
-    st.header("إعدادات المشرف")
-    api_key_input = st.text_input("مفتاح Google Gemini API:", type="password", help="ضع مفتاحك المجاني هنا لتفعيل الذكاء الاصطناعي")
-    st.markdown("---")
-    st.markdown("💡 **عن المشروع:** تطبيق ذكي يحلل الرسائل ليقدم إرشاداً آمناً ولطيفاً للطفل وتنبهاً تقنياً لولي الأمر.")
+# 4. API Key Resolution (Uses Secrets directly, fallback to sidebar if missing)
+api_key = None
+if "GEMINI_API_KEY" in st.secrets:
+    api_key = st.secrets["GEMINI_API_KEY"]
+else:
+    with st.sidebar:
+        st.header("⚙️ إعدادات المفتاح")
+        api_key = st.text_input("مفتاح Google Gemini API:", type="password")
 
-# Main Input Section
-col1, col2 = st.columns([2, 1])
-with col1:
-    user_input = st.text_area(
-        "📱 أرسل أو ألصق الرسالة المشبوهة هنا:",
-        placeholder="مثال: مرحباً يا بطل، لقد ربحت معنا آلاف الجواهر في لعبة روبلوكس! اضغط هنا...",
-        height=130
-    )
+# 5. User Input Controls
+user_input = st.text_area(
+    "📱 أدخل أو ألصق الرسالة/الرابط هنا:",
+    placeholder="مثال: مرحباً يا بطل، لقد ربحت معنا آلاف الجواهر في لعبة روبلوكس! اضغط هنا للحصول عليها...",
+    height=120
+)
 
-with col2:
-    st.markdown("<br>", unsafe_allow_html=True)
-    target_age = st.selectbox("عمر الطفل المستهدف:", ["6-8 سنوات (ثالث ابتدائي)", "9-12 سنة", "مراهقون"])
-    analysis_mode = st.radio("وضع العرض:", ["عرض تفاعلي كامل", "تقرير الوالدين فقط"])
+target_age = st.selectbox(
+    "عمر الطفل المستهدف:",
+    ["6-8 سنوات (ثالث ابتدائي)", "9-12 سنة", "مراهقون"]
+)
 
-# 4. Analysis Logic with Real AI (Gemini)
-if st.button("🚀 بدء الفحص والتحليل الذكي"):
+# 6. Analysis Execution
+if st.button("🚀 بدء الفحص والتحليل الأمني"):
     if not user_input:
         st.warning("⚠️ الرجاء كتابة أو لصق رسالة أولاً لفحصها.")
-    elif not api_key_input:
-        st.error("⚠️ الرجاء إدخال مفتاح Google Gemini API في القائمة الجانبية.")
+    elif not api_key:
+        st.error("⚠️ لم يتم العثور على مفتاح API في الإعدادات.")
     else:
-        with st.spinner("🔍 جاري فحص الرابط والنص عبر خوارزميات الأمن السيبراني..."):
+        with st.spinner("🔍 جاري فحص الرابط والنص عبر الذكاء الاصطناعي..."):
             try:
-                client = genai.Client(api_key=api_key_input)
-                
+                client = genai.Client(api_key=api_key)
                 prompt = f"""
-                You are 'Digital Child Guardian' (حارس الطفل الرقمي), an AI cybersecurity app protecting a 3rd-grade child ({target_age}) from phishing, scams, and online dangers.
+                You are 'Digital Child Guardian' (حارس الطفل الرقمي), an AI cybersecurity app protecting a child ({target_age}) from phishing, scams, and online dangers.
                 Analyze this message: "{user_input}"
                 
-                Provide your response clearly separated into these two exact headers in Arabic:
+                Respond clearly separated into two sections using exact Arabic Markdown headers:
                 ### 🧒 رسالة مبسطة للطفل:
-                (Friendly, reassuring or gently warning tone suitable for a third-grader, explaining in simple terms why it's safe or risky, without causing fear).
+                (A friendly, safe, non-scary explanation suited for this child's age group explaining why it is safe or unsafe).
                 
                 ### 🚨 تقرير أمني لولي الأمر:
-                (Concise technical assessment of the threat type, risk level, and recommended parental action).
+                (Concise technical risk analysis, threat level, and actionable recommendation for parents).
                 """
                 
                 response = client.models.generate_content(
@@ -109,7 +156,7 @@ if st.button("🚀 بدء الفحص والتحليل الذكي"):
                     contents=prompt
                 )
                 
-                st.success("✨ تم الانتهاء من التحليل الأمني بنجاح!")
+                st.success("✨ تم التحليل بنجاح!")
                 st.markdown("---")
                 st.markdown(response.text)
                 
